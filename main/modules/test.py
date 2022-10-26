@@ -24,8 +24,7 @@ class GogoAPI():
         url = api2 + self.anime
         servers = get(url, json=True)
 
-        output = {'m3u8': m3u8, 'servers': servers}
-        return output
+        return {'m3u8': m3u8, 'servers': servers}
 
 
 class ZoroAPI():
@@ -35,8 +34,7 @@ class ZoroAPI():
     def search(self):
         url = api3 + self.name
         data = get(url, json=True)
-        results = data.get('results')
-        return results
+        return data.get('results')
 
     def get_episode_links(self):
         results = self.search()
@@ -69,6 +67,5 @@ class ZoroAPI():
             if lang == 'English':
                 sub = subtitle.get('url')
 
-        output = {'m3u8': m3u8, 'subtitle': sub}
-        return output
+        return {'m3u8': m3u8, 'subtitle': sub}
 

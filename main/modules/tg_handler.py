@@ -70,13 +70,13 @@ async def tg_handler():
 async def start_uploading(data, source, header):
     if await is_uploaded(data["title"]):
         return 'error', 1, 2, 3, 4
-    
+
     title = data["title"] + f" ({source['quality']}p)"
     link = source['url']
     ep_id = data["ep_id"]
     total_size = source['size']
     name = f"{title} [@{UPLOADS_USERNAME}].mp4"
-    fpath = "downloads/" + name
+    fpath = f"downloads/{name}"
 
     oppp = get_anime_name(title)
     id, img, tit = await get_anime_img(oppp)
@@ -171,16 +171,15 @@ async def channel_handler(msg_id, id, name, ep_num, video):
         pass
 
 def get_vote_buttons(a, b, c):
-    buttons = InlineKeyboardMarkup(
+    return InlineKeyboardMarkup(
         [
             [
                 InlineKeyboardButton(text=f"👍 {a}", callback_data="vote1"),
                 InlineKeyboardButton(text=f"♥️ {b}", callback_data="vote2"),
-                InlineKeyboardButton(text=f"👎 {c}", callback_data="vote3")
+                InlineKeyboardButton(text=f"👎 {c}", callback_data="vote3"),
             ]
         ]
     )
-    return buttons
 
 
 def button_formatter(buttons):
@@ -233,15 +232,15 @@ async def votes_(_, query: CallbackQuery):
         c = int(c)
 
         if vote == 1:
-            a = a + 1
+            a += 1
             buttons = get_vote_buttons(a, b, c)
             await query.message.edit_reply_markup(reply_markup=buttons)
         elif vote == 2:
-            b = b + 1
+            b += 1
             buttons = get_vote_buttons(a, b, c)
             await query.message.edit_reply_markup(reply_markup=buttons)
         elif vote == 3:
-            c = c + 1
+            c += 1
             buttons = get_vote_buttons(a, b, c)
             await query.message.edit_reply_markup(reply_markup=buttons)
 
