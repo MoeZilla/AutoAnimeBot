@@ -65,10 +65,8 @@ ANIME_DB = {}
 async def return_json_senpai(query: str, vars_: dict):
     url = "https://graphql.anilist.co"
     anime = vars_["search"]
-    db = ANIME_DB.get(anime)
-
-    if db:
-      return db
+    if db := ANIME_DB.get(anime):
+        return db
     data = requests.post(url, json={"query": query, "variables": vars_}).json()
     ANIME_DB[anime] = data
 
@@ -77,32 +75,27 @@ async def return_json_senpai(query: str, vars_: dict):
 temp = []
 
 async def get_anime(vars_,less):
-    if 1 == 1:
-        result = await return_json_senpai(ANIME_QUERY, vars_)
+    result = await return_json_senpai(ANIME_QUERY, vars_)
 
-        error = result.get("errors")
-        if error:
-            error_sts = error[0].get("message")
-            print([f"[{error_sts}]"])
-            print(vars_)
-            data = temp[0]
-            temp.pop(0)
-        else:
-          data = result["data"]["Media"]   
-          temp.append(data)
-        idm = data.get("id")
-        title = data.get("title")
-        tit = title.get("english")
-        if tit == None:
-            tit = title.get("romaji")
+    if error := result.get("errors"):
+        error_sts = error[0].get("message")
+        print([f"[{error_sts}]"])
+        print(vars_)
+        data = temp[0]
+        temp.pop(0)
+    else:
+        data = result["data"]["Media"]
+        temp.append(data)
+    idm = data.get("id")
+    title = data.get("title")
+    tit = title.get("english")
+    if tit is None:
+        tit = title.get("romaji")
 
-        tit = format_text(tit)
-        title_img = f"https://img.anili.st/media/{idm}"
-        
-        if less == True:
-          return idm, title_img, tit
+    tit = format_text(tit)
+    title_img = f"https://img.anili.st/media/{idm}"
 
-        return data
+    return (idm, title_img, tit) if less == True else data
 
 async def get_anime_img(query):
     vars_ = {"search": query}
@@ -115,10 +108,7 @@ def get_anime_name(title):
     x = title.replace(x,'').replace('-','').strip()
     x = x.split(' ')
     x = x[:4]
-    y = ''
-    for i in x:
-        y += i + ' '
-    return y
+    return ''.join(f'{i} ' for i in x)
 
 atext = """
 📺 **{}**
@@ -151,18 +141,15 @@ async def get_anilist_data(name):
     title1 = title.get("english")
     title2 = title.get("romaji")
 
-    if title2 == None:
-      title2 = title.get("native")
+    if title2 is None:
+        title2 = title.get("native")
 
-    if title1 == None:
-      title1 = title2
+    if title1 is None:
+        title1 = title2
 
     # genre
 
-    genre = ""
-
-    for i in genres:
-      genre += i + ", "
+    genre = "".join(f"{i}, " for i in genres)
 
     genre = genre[:-2]
 

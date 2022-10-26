@@ -12,8 +12,7 @@ def get_duration(file):
 
     frames = data.get(cv2.CAP_PROP_FRAME_COUNT)
     fps = int(data.get(cv2.CAP_PROP_FPS))
-    seconds = int(frames / fps)
-    return seconds
+    return int(frames / fps)
 
 
 def get_screenshot(file):
@@ -35,11 +34,7 @@ def get_screenshot(file):
 def get_filesize(file):
     x = os.path.getsize(file)
     x = round(x/(1024*1024))
-    if x > 1024:
-        x = str(round(x/1024, 2)) + " GB"
-    else:
-        x = str(x) + " MB"
-
+    x = f"{str(round(x / 1024, 2))} GB" if x > 1024 else f"{str(x)} MB"
     return x
 
 
@@ -54,17 +49,15 @@ def format_time(time):
     min = floor(time/60)
     sec = round(time-(min*60))
 
-    time = str(min) + ":" + str(sec)
+    time = f"{str(min)}:{str(sec)}"
     return time
 
 
 def format_text(text):
-    ftext = ""
-    for x in text:
-        if x in ascii_letters or x == " " or x in digits:
-            ftext += x
-        else:
-            ftext += " "
+    ftext = "".join(
+        x if x in ascii_letters or x == " " or x in digits else " "
+        for x in text
+    )
 
     while "  " in ftext:
         ftext = ftext.replace("  ", " ")
@@ -97,12 +90,14 @@ async def status_text(text):
 {}
 """
 
-    queue_text = ""
-    for i in queue:
-        queue_text += "📌 " + \
-            i["title"].replace(".mkv", "").replace(".mp4", "").strip() + "\n"
+    queue_text = "".join(
+        "📌 "
+        + i["title"].replace(".mkv", "").replace(".mp4", "").strip()
+        + "\n"
+        for i in queue
+    )
 
-    if queue_text == "":
+    if not queue_text:
         queue_text = "❌ Empty"
 
     return stat.format(
@@ -134,37 +129,37 @@ ETA: {}
     total_size = round(total_size/(1024*1024), 2)  # in MB
 
     if size_downloaded < 1024:
-        dtext1 = str(size_downloaded) + ' MB'
+        dtext1 = f'{str(size_downloaded)} MB'
     else:
         x = round(size_downloaded/1024, 2)  # in GB
-        dtext1 = str(x) + ' GB'
+        dtext1 = f'{str(x)} GB'
 
     if total_size < 1024:
-        dtext2 = str(total_size) + ' MB'
+        dtext2 = f'{str(total_size)} MB'
     else:
         total_size = round(total_size/1024, 2)  # in GB
-        dtext2 = str(total_size) + ' GB'
+        dtext2 = f'{str(total_size)} GB'
 
     speed = round((a-downloaded)/(10*1024), 2)
     if speed < 1024:
-        stext = str(speed) + ' Kbps'
+        stext = f'{str(speed)} Kbps'
     else:
         x = round(speed/1024, 2)
-        stext = str(x) + ' Mbps'
+        stext = f'{str(x)} Mbps'
 
     remaining = (b - a)/1024  # in kb
     time_remaining = floor(remaining/speed)  # in seconds
 
     if time_remaining < 60:
-        ttext = str(time_remaining) + ' seconds'
+        ttext = f'{str(time_remaining)} seconds'
     elif time_remaining < 3600:
         x = floor(time_remaining/60)
         y = time_remaining-(x*60)
-        ttext = str(x) + ' minute ' + str(y) + ' seconds'
+        ttext = f'{str(x)} minute {str(y)} seconds'
     else:
         x = floor(time_remaining/3600)
         y = time_remaining-(x*3600)
-        ttext = str(x) + ' hour ' + str(y) + ' minutes'
+        ttext = f'{str(x)} hour {str(y)} minutes'
 
     text = text.format(
         filename,
@@ -204,24 +199,21 @@ ETA: {}
         if x > 60:
             z = floor(x/60)
             x = x-(z*60)
-            ETA = str(z) + " Hour " + str(x) + " Minute"
+            ETA = f"{str(z)} Hour {str(x)} Minute"
         else:
-            ETA = str(x) + " Minute " + str(y) + " Second"
+            ETA = f"{str(x)} Minute {str(y)} Second"
     else:
-        ETA = str(ETA) + " Second"
+        ETA = f"{str(ETA)} Second"
     if speed > 1024:
-        speed = str(round(speed/1024)) + " MB"
+        speed = f"{str(round(speed / 1024))} MB"
     else:
-        speed = str(speed) + " KB"
+        speed = f"{str(speed)} KB"
     completed = round((percent/100)*size)
     if completed > 1024:
-        completed = str(round(completed/1024, 2)) + " GB"
+        completed = f"{str(round(completed / 1024, 2))} GB"
     else:
         completed = str(completed) + " MB"
-    if size > 1024:
-        size = str(round(size/1024, 2)) + " GB"
-    else:
-        size = str(size) + " MB"
+    size = str(round(size/1024, 2)) + " GB" if size > 1024 else str(size) + " MB"
     fill = "▪️"
     blank = "▫️"
     bar = ""

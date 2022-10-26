@@ -28,15 +28,17 @@ def get_scheduled_animes():
 
     animes = []
     for i in res:
-        x = {}
-        x['title'] = i['title']
-        x['link'] = "https://subsplease.org/shows/" + i['page']
         t = i['time']
 
         hh, mm = change_tz(t)
 
         if int(hh) < 24:
-            x['time'] =  str(hh) + ":" + str(mm)
+            x = {
+                'title': i['title'],
+                'link': "https://subsplease.org/shows/" + i['page'],
+                'time': f"{str(hh)}:{str(mm)}",
+            }
+
             animes.append(x)
 
     return animes
@@ -46,14 +48,11 @@ async def update_schedule():
     text = "<b>📆 Today's Schedule</b> \n\n"
 
     for i in animes:
-        text += '<b>[</b><code>{}</code><b>] - 📌 <a href="{}">{}</a></b>\n'.format(
-            i["time"],
-            i["link"],
-            i["title"]
-        )
+        text += f'<b>[</b><code>{i["time"]}</code><b>] - 📌 <a href="{i["link"]}">{i["title"]}</a></b>\n'
+
 
     text += "\n<b>⏰ Current TimeZone :</b> <code>IST (UTC +5:30)</code>"
-    
+
     try:
         await schedule.edit(text,reply_markup=button2,parse_mode=ParseMode.HTML)
     except:

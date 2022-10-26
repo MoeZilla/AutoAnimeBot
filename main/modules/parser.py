@@ -21,9 +21,11 @@ def parse():
     data = []    
 
     for i in latest:
-        item = {}
-        item['title'] = i['anime_title'] + ' - ' + str(i['episode'])
-        item['ep_id'] = i['session']
+        item = {
+            'title': i['anime_title'] + ' - ' + str(i['episode']),
+            'ep_id': i['session'],
+        }
+
         data.append(item)
     return data
 
@@ -38,14 +40,8 @@ async def auto_parser():
         saved = await get_animesdb()
         uploaded = await get_uploads()
 
-        saved_anime = []
-        for i in saved:
-            saved_anime.append(i["name"])
-
-        uanimes = []
-        for i in uploaded:
-            uanimes.append(i["name"])
-        
+        saved_anime = [i["name"] for i in saved]
+        uanimes = [i["name"] for i in uploaded]
         for i in data:
             if i["title"] not in uanimes and i["title"] not in saved_anime:
                 title = i["title"]
